@@ -1,0 +1,34 @@
+Create procedure guesttest( @firstname varchar(250) output)  
+as  
+begin  
+DECLARE @lastname varchar(250)  
+DECLARE @addr1 varchar (250)  
+DECLARE @addr2 varchar (250)  
+DECLARE @city varchar (250)  
+DECLARE @state varchar (250)  
+DECLARE @zipcode varchar(250)  
+  
+select @firstname = COALESCE(@firstname + ', ' + firstname, firstname) from guests where lastname = @lastname   
+  
+Declare GuestCoupleCursor CURSOR  
+FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%Hay%' and addr1 not like '%7379%' group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and c
+ount (addr1) > 1  
+    
+ Open GuestCoupleCursor  
+  
+ FETCH NEXT FROM GuestCoupleCursor  
+ INTO @lastname, @addr1, @addr2, @city, @state, @zipcode  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+  
+Print @firstname + ' ' + @lastname  
+Print @addr1 + ' ' + @addr2  
+Print @city + ',' + ' ' + @state + ' ' + @zipcode  
+Print '______________________________________'  
+ FETCH NEXT FROM GuestCoupleCursor  
+ INTO @lastname, @addr1, @addr2, @city, @state, @zipcode  
+ END  
+ CLOSE GuestCoupleCursor  
+DEALLOCATE GuestCoupleCursor  
+end

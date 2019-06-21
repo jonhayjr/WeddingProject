@@ -1,0 +1,10 @@
+--Function that takes count of guests with same last name
+CREATE FUNCTION partycount2 (@lastname varchar(100))      
+  RETURNS Int    
+  AS      
+    BEGIN       
+DECLARE @count int        
+        
+Select @count = count(firstname) FROM guests where bexclude = 0 and lastname = @lastname      
+          RETURN (SELECT @count)      
+    END

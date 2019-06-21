@@ -1,0 +1,25 @@
+CREATE Procedure sp_guestnoaddress  
+AS  
+Begin  
+DECLARE @firstname varchar (250)  
+DECLARE @lastname varchar(250)  
+  
+Declare GuestNoAddressCursor CURSOR  
+FOR select ltrim(rtrim(firstname)), case when lastname like '%GF%' or lastname like '%Santa Clarita%' or lastname like '%wife%' or lastname like '%shoreline ministry%' then ' ' else ltrim (rtrim(lastname)) end lastname from guests where addr1 is null and 
+lastname not in (select lastname from guests where addr1 is null and lastname not in ('Hay', 'Wife') group by lastname having count(lastname) > 1 )  
+    
+ Open GuestNoAddressCursor  
+  
+ FETCH NEXT FROM GuestNoAddressCursor  
+ INTO @firstname, @lastname  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+Print @firstname + ' ' + @lastname  
+Print '______________________________________'  
+ FETCH NEXT FROM GuestNoAddressCursor  
+ INTO @firstname, @lastname  
+ END  
+ CLOSE GuestNoAddressCursor  
+DEALLOCATE GuestNoAddressCursor  
+End

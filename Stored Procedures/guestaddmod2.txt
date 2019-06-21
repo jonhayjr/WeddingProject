@@ -1,0 +1,22 @@
+create procedure guestaddmod2  
+as    
+Begin    
+DECLARE @lastname varchar(250)     
+    
+Declare GuestCoupleCursor CURSOR    
+FOR select lastname from guests where addr1 is null and lastname not in ('Lopez', 'Hay', 'Casarez', 'Vargas') and bmail = 0 and ctry = 'USA' and bexclude = 0 group by lastname having count(lastname) > 1  
+ Open GuestCoupleCursor    
+    
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname  
+  
+ WHILE @@FETCH_STATUS = 0    
+ BEGIN    
+ INSERT INTO guestmailinginfo  
+ VALUES (concat(dbo.firstnamelist2(@lastname), ' ', @lastname), null, null, dbo.partycount2(@lastname), 0)  
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname  
+ END    
+ CLOSE GuestCoupleCursor    
+DEALLOCATE GuestCoupleCursor    
+End

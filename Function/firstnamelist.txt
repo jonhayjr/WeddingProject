@@ -1,0 +1,14 @@
+--Function that creates list of first names for guests with the same last name and a particular address
+CREATE FUNCTION firstnamelist (@lastname varchar(100), @addr1 varchar(100))    
+  RETURNS VARCHAR(200)    
+  AS    
+    BEGIN     
+DECLARE @firstname varchar(250)      
+DECLARE @firstnamemod varchar(250)      
+      
+Select @firstname = coalesce (@firstname + ', ', '') + ltrim(rtrim(firstname)) FROM guests where lastname = @lastname and addr1 = @addr1     
+      
+Set @firstnamemod = ltrim(rtrim(substring (@firstname, 1, len (@firstname) - charindex (',', reverse(@firstname))))) + ' ' + ltrim(rtrim(replace(reverse(substring(reverse(@firstname), 1, charindex (',', reverse(@firstname)))), ',', 'and') ))          
+    
+       RETURN (SELECT  @firstNamemod )    
+    END

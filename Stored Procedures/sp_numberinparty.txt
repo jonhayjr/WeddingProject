@@ -1,0 +1,30 @@
+--Creates guest count card
+CREATE PROCEDURE sp_numberinparty  
+AS  
+DECLARE @mailingname varchar(250)  
+DECLARE @numberinparty varchar(15)  
+  
+Declare CountCursor CURSOR  
+FOR select mailingname, convert(varchar(15), numberinparty) from guestmailinginfo  
+    
+ Open CountCursor  
+  
+ FETCH NEXT FROM CountCursor  
+ INTO @mailingname, @numberinparty  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+Print @mailingname  
+Print '______________________________________'  
+Print '______________________________________'  
+Print '  '  
+Print 'We have reserved ' + @numberinparty + ' seat(s) in your honor.'  
+Print 'Please RSVP online by August 1st.'  
+Print '[Wedding website]'  
+Print '  '  
+Print '______________________________________'  
+ FETCH NEXT FROM CountCursor  
+ INTO @mailingname, @numberinparty  
+ END  
+ CLOSE CountCursor  
+DEALLOCATE CountCursor

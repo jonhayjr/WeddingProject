@@ -1,0 +1,56 @@
+Create Procedure modifyguests  
+As   
+Begin  
+if exists (select * from sys.sysobjects where name = 'evitemod1')  
+drop table evitemod1  
+  
+if exists (select * from sys.sysobjects where name = 'evitemod2')  
+drop table evitemod2  
+
+--Inserts all guests with RSVP that is not equal to 'Not Yet Replied' into evitemod1 table
+select g.firstname 'firstname', g.lastname 'lastname', g.rsvp 'oldrsvp', e.rsvp 'newrsvp' into evitemod1  
+from evite e join guests g on ltrim(rtrim(e.firstname)) = ltrim(rtrim(g.firstname)) and ltrim(rtrim(e.lastname)) = ltrim(rtrim(g.lastname))  
+where isnull(e.rsvp, ' ') <> isnull(g.rsvp, ' ') and e.rsvp <> 'Not Yet Replied'  
+
+--Inserts all guests with no notes into evitemod2 table
+select g.firstname 'firstname', g.lastname 'lastname', g.notes 'oldnotes', e.notes 'newnotes' into evitemod2  
+from evite e join guests g on ltrim(rtrim(e.firstname)) = ltrim(rtrim(g.firstname)) and ltrim(rtrim(e.lastname)) = ltrim(rtrim(g.lastname))  
+where e.notes is not null and g.notes is null  
+End  
+Begin
+--Updates RSVP value in guests table and sets it equal to new value in evite table  
+Update g  
+set g.rsvp = e.rsvp  
+from evite e join  
+guests g on ltrim(rtrim(e.firstname)) = ltrim(rtrim(g.firstname)) and ltrim(rtrim(e.lastname)) = ltrim(rtrim(g.lastname))  
+where isnull(e.rsvp, ' ') <> isnull(g.rsvp, ' ') and e.rsvp <> 'Not Yet Replied'  
+End  
+Begin
+--Updates notes value in guests table and sets it equal to new value in evite table  
+Update g  
+set g.notes = ltrim(rtrim(e.notes))  
+from evite e join guests g on ltrim(rtrim(e.firstname)) = ltrim(rtrim(g.firstname)) and ltrim(rtrim(e.lastname)) = ltrim(rtrim(g.lastname))  
+where e.notes is not null and g.notes is null  
+End  
+Begin  
+If exists (select * from sys.sysobjects where name = 'rsvptemp' and type = 'u')  
+drop table rsvptemp  
+--Query that shows made to notes or RSVP and exports this to a CSV file
+Select * into rsvptemp  
+from (Select 'First Name' AS firstname, 'Last Name' AS lastname, 'Old RSVP' As oldrsvp, 'New RSVP' As newrsvp  
+UNION ALL  
+Select '', '', '', ''  
+UNION ALL  
+Select firstname, lastname, oldrsvp, newrsvp from evitemod1  
+UNION ALL  
+Select '', '', '', ''  
+UNION ALL  
+Select 'First Name' AS firstname, 'Last Name' AS lastname, 'Old Notes' As oldnotes, 'New Notes' As newnotes  
+UNION ALL  
+Select '', '', '', ''  
+UNION ALL  
+Select firstname, lastname, oldnotes, newnotes from evitemod2) As temp  
+End  
+Begin  
+EXEC xp_cmdshell 'bcp "SELECT * from wedding.dbo.rsvptemp" queryout "C:\Exports\RSVPUpdates.csv" -t, -c -k -T'  
+END

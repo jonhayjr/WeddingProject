@@ -1,0 +1,9 @@
+create proc sp_guestbackup  
+as  
+begin  
+if exists (select * from sys.objects where name ='guestscopy' and type = 'u')  
+drop table guestscopy  
+  
+select * into guestscopy  
+from guests  
+end

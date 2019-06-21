@@ -1,0 +1,10 @@
+create proc sp_deleteoldtables  
+as  
+declare @sql1 nvarchar(max)   
+SELECT @sql1 = stuff ((  
+           select ' drop table dbo.[' + name + ']'  
+          FROM sys.sysobjects AS sobjects  
+           WHERE (xtype = 'U') AND (name LIKE '%copy%') and (crdate < getdate())),  
+     1, 1, '')  
+  
+ execute sp_executesql @sql1  

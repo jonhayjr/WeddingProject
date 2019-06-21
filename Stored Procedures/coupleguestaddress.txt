@@ -1,0 +1,31 @@
+CREATE procedure coupleguestaddress    
+as    
+Begin    
+DECLARE @lastname varchar(250)    
+DECLARE @addr1 varchar (250)    
+DECLARE @addr2 varchar (250)    
+DECLARE @city varchar (250)    
+DECLARE @state varchar (250)    
+DECLARE @zipcode varchar(250)    
+    
+--Creates cursor for guest couples with address    
+Declare GuestCoupleCursor CURSOR    
+FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%[Excludes specific last names%' and bmail = 0 group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and    
+count (addr1) > 1    
+      
+ Open GuestCoupleCursor    
+    
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname, @addr1, @addr2, @city, @state, @zipcode    
+    
+ WHILE @@FETCH_STATUS = 0    
+ BEGIN 
+ --Inserts cursor values into guestmailinginfo table.  Uses custom function to create list of first names and uses another function to insert party count value.   
+ INSERT INTO guestmailinginfo  
+ VALUES (concat(dbo.firstnamelist(@lastname, @addr1), ' ', @lastname), concat(@addr1, ' ', @addr2), concat(@city, ',', ' ', @state, ' ', @zipcode), dbo.partycount(@lastname, @addr1), 0)  
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname, @addr1, @addr2, @city, @state, @zipcode    
+ END    
+ CLOSE GuestCoupleCursor    
+DEALLOCATE GuestCoupleCursor    
+End

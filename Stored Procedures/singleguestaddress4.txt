@@ -1,0 +1,24 @@
+create procedure singleguestaddress4  
+as   
+Begin  
+DECLARE @firstname varchar (250)  
+DECLARE @lastname varchar(250)  
+--Declares cursor for single guests that have no address, aren't marked a exclude, are marked as mail, not including specific last names, and last name doesn't exist in guest mailinginfo table 
+Declare GuestCursor CURSOR  
+FOR select firstname, lastname from guests where addr1 is null and bexclude = 0 and bmail = -1 and lastname not in ([Excludes specific last name]) and lastname not in (select lastname from guestmailinginfo)  
+    
+ Open GuestCursor  
+  
+ FETCH NEXT FROM GuestCursor  
+ INTO @firstname, @lastname  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+INSERT INTO guestmailinginfo  
+ VALUES (concat(@firstname, ' ', @lastname), null, null, 1, -1, @lastname)  
+ FETCH NEXT FROM GuestCursor  
+ INTO @firstname, @lastname  
+ END  
+ CLOSE GuestCursor  
+DEALLOCATE GuestCursor  
+END  

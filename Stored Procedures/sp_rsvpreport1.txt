@@ -1,0 +1,14 @@
+CREATE Proc sp_rsvpreport1  
+AS  
+If exists (select * from sys.sysobjects where name = 'rsvpreport' and type = 'u')  
+drop table rsvpreport  
+Begin  
+select * into rsvpreport from (Select 'First Name' AS firstname, 'Last Name' AS lastname, 'Email' AS email, 'Phone Number' AS phonenumber, 'Address' AS address, 'City' as city, 'State' as state, 'Zip Code' as zipcode, 'RSVP' AS rsvp  
+UNION ALL  
+Select firstname, isnull (lastname, ' '), isnull(email, ' '), isnull(phonenum, ' '), concat (isnull(ltrim(rtrim(addr1)), ' '), (' '), isnull(ltrim(rtrim(addr2)), ' ')), isnull(ltrim(rtrim(city)), ' '), isnull(ltrim(rtrim(state)), ' '), isnull(convert (var
+char, zipcode), ' '), isnull(rsvp, ' ')  
+from guests where rsvp is null or rsvp = 'Not Yet Replied') as temp  
+End  
+Begin  
+EXEC xp_cmdshell 'bcp "SELECT * from wedding.dbo.rsvpreport" queryout "C:\Exports\RSVPReport.csv" -t, -c -k -T'  
+End

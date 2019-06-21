@@ -1,0 +1,23 @@
+CREATE Procedure sp_guestcouplenoaddress    
+AS    
+Begin    
+DECLARE @lastname varchar(250)  
+  
+Declare GuestCoupleNoAddressCursor CURSOR  
+FOR select lastname from guests where addr1 is null and lastname not in ('Hay', 'Wife', 'OCallaghan', 'Lee') group by lastname having count(lastname) > 1   
+    
+ Open GuestCoupleNoAddressCursor  
+  
+ FETCH NEXT FROM GuestCoupleNoAddressCursor  
+ INTO @lastname  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+EXEC sp_firstnamelistnoaddress @lastname = @lastname  
+Print '______________________________________'  
+ FETCH NEXT FROM GuestCoupleNoAddressCursor  
+ INTO @lastname  
+ END  
+ CLOSE GuestCoupleNoAddressCursor  
+DEALLOCATE GuestCoupleNoAddressCursor  
+END

@@ -1,0 +1,25 @@
+create procedure coupleguestaddressmod2   
+as    
+Begin    
+DECLARE @lastname varchar(250)    
+    
+--Declares cursor for couples with same last name that have no address    
+Declare GuestCoupleCursor CURSOR    
+FOR select lastname from guests where addr1 is null and lastname not in ([Excludes specific last names]) and lastname not in (select lastname from guestmailinginfo) and bmail = -1 and ctry = 'USA' group by lastname having count(lastname) > 1   
+  
+ Open GuestCoupleCursor    
+    
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname  
+    
+ WHILE @@FETCH_STATUS = 0    
+ BEGIN  
+ --Inserts cursor values into guestmailinginfo table.  Uses custom function to create list of first names and uses another function to insert party count value.  
+ INSERT INTO guestmailinginfo  
+ VALUES (concat(dbo.firstnamelist2(@lastname), ' ', @lastname), null, null, dbo.partycount2(@lastname), -1, @lastname)  
+ FETCH NEXT FROM GuestCoupleCursor    
+ INTO @lastname   
+ END    
+ CLOSE GuestCoupleCursor    
+DEALLOCATE GuestCoupleCursor    
+End

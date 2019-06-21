@@ -1,0 +1,19 @@
+CREATE proc exportguests  
+as   
+begin  
+if exists(select * from sys.objects where name = 'guestsexport' and type = 'u')  
+drop table guestsexport  
+select guestid, firstname, lastname, phonenum, rsvp into guestsexport from (select 'id' as guestid, 'first name' as firstname, 'last name' as lastname, 'phone number' as phonenum, 'rsvp' as rsvp  
+union all select cast(guestid as varchar(3)) [guestid], firstname, lastname, phonenum, rsvp FROM guests) as g  
+end  
+begin  
+declare @bcp varchar(150)  
+declare @timestamp varchar(50)  
+declare @filepath varchar(100)  
+declare @query varchar(150)  
+set @timestamp = replace(convert(varchar(100), getdate(), 101), '/', '_')  
+set @filepath = '"C:\Exports\Guests' + @timestamp + '.csv"'  
+set @query = '"SELECT [guestid], [firstname], [lastname], [phonenum], [rsvp] from wedding.dbo.guestsexport"'  
+set @bcp = 'bcp' + ' ' + @query + ' ' + 'queryout' + ' ' + @filepath + ' ' + '-T -t, -c -k'  
+EXEC xp_cmdshell @bcp  
+end

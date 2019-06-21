@@ -1,0 +1,13 @@
+CREATE Proc sp_addressreport  
+AS  
+If exists (select * from sys.sysobjects where name = 'addressreport' and type = 'u')  
+drop table addressreport  
+Begin  
+select * into addressreport from (Select 'First Name' AS firstname, 'Last Name' AS lastname, 'Email' AS email, 'Phone Number' AS phonenumber, 'RSVP' AS rsvp  
+UNION ALL  
+Select firstname, isnull (lastname, ' '), isnull(email, ' '), isnull(phonenum, ' '), isnull(rsvp, ' ')  
+from guests where addr1 is null) as temp  
+End  
+Begin  
+EXEC xp_cmdshell 'bcp "SELECT * from wedding.dbo.addressreport" queryout "C:\Exports\AddressReport.csv" -t, -c -k -T'  
+End

@@ -1,0 +1,28 @@
+--This stored procedure creates the mailing labels.
+CREATE PROCEDURE sp_mailinglabels  
+AS  
+DECLARE @mailingname varchar(250)  
+DECLARE @addrline1 varchar (250)  
+DECLARE @addrline2 varchar (250)  
+DECLARE @ctry varchar (250)  
+  
+Declare LabelCursor CURSOR  
+FOR select mailingname, case when bmail = 0 then '' else isnull(addrline1, '') end addrline1, case when bmail = 0 then '' else isnull(addrline2, '') end addrline2, case when ctry = 'Ireland' and addrline1 is not null then ctry else '' end ctry from guestmailinginfo  
+    
+ Open LabelCursor  
+  
+ FETCH NEXT FROM LabelCursor  
+ INTO @mailingname, @addrline1, @addrline2, @ctry  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+Print @mailingname  
+Print @addrline1  
+Print @addrline2  
+Print @ctry  
+Print '______________________________________'  
+ FETCH NEXT FROM LabelCursor  
+ INTO @mailingname, @addrline1, @addrline2, @ctry  
+ END  
+ CLOSE LabelCursor  
+DEALLOCATE LabelCursor

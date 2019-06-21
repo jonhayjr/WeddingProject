@@ -1,0 +1,33 @@
+CREATE Proc sp_totalname  
+AS  
+ create table #total  
+ (firstname varchar (250),  
+ lastname varchar (250),  
+ total int)  
+   
+ DECLARE @firstname varchar (250)  
+DECLARE @lastname varchar(250)  
+DECLARE @total int  
+  
+Declare TotalCursor CURSOR  
+FOR select [Last Name], total from total where [Last Name] not in ('Acy', 'Lee', 'Lopez', 'Vargas', 'Williams', 'Wife', 'Hay', 'Grand Total', 'Sims')  
+    
+ Open TotalCursor  
+  
+ FETCH NEXT FROM TotalCursor  
+ INTO @lastname, @total  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+  
+ Insert into #total  
+select dbo.firstnamelist2(@lastname) 'firstname', @lastname 'lastname', @total 'total'  
+ FETCH NEXT FROM TotalCursor  
+ INTO @lastname, @total  
+  
+ select * from #total  
+ union all  
+ select ' ', 'Final Total', sum (total) from #total  
+ END  
+ CLOSE TotalCursor  
+DEALLOCATE TotalCursor

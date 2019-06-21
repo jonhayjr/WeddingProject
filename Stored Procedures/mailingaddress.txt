@@ -1,0 +1,19 @@
+--This procedure executes all mailingaddress procedures
+CREATE procedure mailingaddress  
+As  
+if exists (select * from guests where addr1 is not null and lastname not like '%[Excludes specific last name]%' and addr1 not like '%[Excludes specific addresses]%' and lastname not in (select lastname from guests where addr1 is not null and lastname not like '%[Excludes specific last names]%' and addr1 not like '%[Excludes specific addresses]%' group by lastname having count(lastname) > 1 and count (addr1) > 1))  
+Begin  
+EXEC singleguestaddress2  
+End  
+if exists (select lastname from guests where addr1 is not null and lastname not like '%[Excludes specific last names]%' and addr1 not like '%[Excludes specific addresses]%' group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and count (addr1) > 1)  
+Begin  
+EXEC coupleguestaddress  
+End   
+if exists (select lastname from guests where addr1 is null and lastname not in ([Excludes specific last names]) group by lastname having count(lastname) > 1)  
+Begin  
+EXEC coupleguestaddressmod2
+End  
+if exists (select lastname from guests where addr1 is null and lastname not in (select lastname from guests where addr1 is null and lastname not in ([Excludes specific last names]) group by lastname having count(lastname) > 1))  
+Begin  
+EXEC sp_guestnoaddress  
+End  

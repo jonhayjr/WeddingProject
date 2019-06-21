@@ -1,0 +1,14 @@
+CREATE Procedure sp_firstnamelist_alt (@lastname varchar(250),  
+         @addr1 varchar(250))  
+AS  
+BEGIN  
+DECLARE @firstname varchar(250)  
+DECLARE @firstnamemod varchar(250)  
+  
+Select @firstname = stuff ((select ', ' + firstname from guests where lastname = @lastname for xml path ('')), 1, 1, '')  
+  
+Set @firstnamemod = ltrim(rtrim(substring (@firstname, 1, len (@firstname) - charindex (',', reverse(@firstname))))) + ' ' + ltrim(rtrim(replace(reverse(substring(reverse(@firstname), 1, charindex (',', reverse(@firstname)))), ',', 'and') ))      
+  
+Print @firstnamemod + ' ' + @lastname   
+  
+END

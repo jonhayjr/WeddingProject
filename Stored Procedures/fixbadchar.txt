@@ -1,0 +1,14 @@
+CREATE Procedure fixbadchar  
+as  
+if exists (select * from evite where notes like '%GÇÖ%')  
+Begin  
+update evite  
+set notes = replace(notes, 'GÇÖ', '')  
+where notes like '%GÇÖ%'  
+End  
+if exists (select * from evite where notes like '%=ƒÆ£%')  
+Begin  
+update evite  
+set notes = replace(notes, '=ƒÆ£', '')  
+where notes like '%=ƒÆ£%'  
+End  

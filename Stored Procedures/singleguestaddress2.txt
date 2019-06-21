@@ -1,0 +1,29 @@
+create procedure singleguestaddress2  
+as   
+Begin  
+DECLARE @firstname varchar (250)  
+DECLARE @lastname varchar(250)  
+DECLARE @addr1 varchar (250)  
+DECLARE @addr2 varchar (250)  
+DECLARE @city varchar (250)  
+DECLARE @state varchar (250)  
+DECLARE @zipcode varchar(250)  
+--Declares cursor for single guests that have an address, aren't marked a exclude, are marked as mail, not including specific last names, and last name doesn't exist in guest mailinginfo table 
+Declare GuestCursor CURSOR  
+FOR select firstname, lastname, addr1, isnull(addr2, ' ') addr2, city, state, isnull(cast(zipcode as varchar(50)), ' ') 'zipcode' from guests where addr1 is not null and bexclude = 0 and bmail = -1 and lastname not in ([Excludes specific last names]) and lastname not in (select lastname from guestmailinginfo)  
+    
+ Open GuestCursor  
+  
+ FETCH NEXT FROM GuestCursor  
+ INTO @firstname, @lastname, @addr1, @addr2, @city, @state, @zipcode  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN  
+INSERT INTO guestmailinginfo  
+ VALUES (@firstname, concat(@addr1, ' ', @addr2), concat(@city, ',', ' ', @state, ' ', @zipcode), 1, -1, @lastname)  
+ FETCH NEXT FROM GuestCursor  
+ INTO @firstname, @lastname, @addr1, @addr2, @city, @state, @zipcode  
+ END  
+ CLOSE GuestCursor  
+DEALLOCATE GuestCursor  
+END  

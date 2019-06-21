@@ -1,0 +1,12 @@
+CREATE proc guestview  
+as   
+begin  
+drop view if exists [guests_view]  
+  
+declare @sql nvarchar(max)  
+set @sql = 'create view guests_view  
+as   
+select [id] as guestid, [first name] as firstname, [last name] as lastname, [phone number] as phonenum, [rsvp] as rsvp  
+union all select cast(guestid as varchar(3)) [guestid], firstname, lastname, phonenum, rsvp FROM guests'  
+exec sp_executesql @sql  
+end 

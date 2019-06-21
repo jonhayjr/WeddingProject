@@ -1,0 +1,15 @@
+Create Procedure sp_evite  
+As  
+Begin  
+If exists (select * from sys.sysobjects where name = 'guestscopy' and type = 'U')  
+Drop table guestscopy  
+  
+Select * into guestscopy  
+from guests  
+End  
+Begin  
+EXEC crevite  
+End  
+Begin  
+EXEC modifyguests  
+End  

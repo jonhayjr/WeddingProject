@@ -1,0 +1,58 @@
+CREATE Procedure crevite  
+AS  
+If exists (select * from sys.sysobjects where name = 'evitestaging' and type = 'u')  
+Drop table evitestaging  
+Begin  
+--Creates temporary table to store import data.
+create table evitestaging(  
+   name varchar(50),  
+   email varchar(50),  
+   phone varchar(50),  
+   rsvp varchar(50),  
+   numberguest int,  
+   notes varchar(max))  
+End  
+Begin  
+--Imports data from CSV file into temp table
+bulk insert evitestaging  
+from 'c:\import\eviteguests.csv'  
+with  
+  (Firstrow = 2, Fieldterminator = ',',  
+   RowTerminator = '\n')  
+End  
+Begin  
+If exists (select * from sys.sysobjects where name = 'evite' and type = 'u')  
+Drop table evite  
+--Creates new table to store modified version of Evite data 
+create table evite  
+(eid int identity not null,  
+   firstname varchar(50),  
+   lastname varchar(50),  
+   email varchar(50),  
+   phone varchar(50),  
+   rsvp varchar(50),  
+   notes varchar(max))  
+ --Inserts data from staging table.  Splits values from name column into first name and last name    
+   Insert into evite  
+   select ltrim(rtrim(substring(name, 1, charindex(' ', name)))), reverse(ltrim(rtrim(substring(reverse(ltrim(rtrim(name))), 1, charindex(' ', reverse(ltrim(rtrim(name)))))))), email, phone, rsvp, notes from evitestaging  
+End  
+Begin 
+--Removes +1 from phone number field and replaces with blank 
+update evite  
+set phone = replace(phone, '+1', '')  
+where phone is not null  
+  
+--Removes - from phone number field replaces with blank  
+update evite  
+set phone = replace(phone, '-', '')  
+where phone is not null  
+
+--Updates phone number to following format (xxx) xxx-xxxx  
+update evite  
+set phone = '(' + substring(ltrim(rtrim(phone)), 1, 3) + ')' + ' ' + substring(ltrim(rtrim(phone)), 4, 3) + '-' + substring(ltrim(rtrim(phone)), 7, 4)  
+where phone is not null  
+End  
+Begin
+--Executes custom procedure to fix bad characters issue  
+Exec fixbadchar  
+End  
