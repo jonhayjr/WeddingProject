@@ -5,7 +5,7 @@ Executes two procedures
 		-fixbadchar - removes special characters from notes section
 	-modifyguests - updates guests table with new values from RSVP and notes fields
 2. evitecsvmod.py
-Transfers contens of guestlist.csv to new file eviteguests.csv.  Removes files with filename of guestlist.csv and RSVPUpdates.csv
+Transfers contents of guestlist.csv to new file eviteguests.csv.  Removes files with filename of guestlist.csv and RSVPUpdates.csv
 3. rsvpemail.py
 Emails RSVPUpdates.csv which shows all updates that have been made.  This CSV is created by stored procedure - modifyguests.
 4. sp_addressreport 
