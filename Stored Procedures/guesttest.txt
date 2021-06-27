@@ -11,7 +11,7 @@ DECLARE @zipcode varchar(250)
 select @firstname = COALESCE(@firstname + ', ' + firstname, firstname) from guests where lastname = @lastname   
   
 Declare GuestCoupleCursor CURSOR  
-FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%Hay%' and addr1 not like '%7379%' group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and c
+FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%[Exclude specific last names]%' and addr1 not like '%[Exclude specific address%' group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and c
 ount (addr1) > 1  
     
  Open GuestCoupleCursor  

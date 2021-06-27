@@ -4,7 +4,7 @@ Begin
 DECLARE @lastname varchar(250)     
     
 Declare GuestCoupleCursor CURSOR    
-FOR select lastname from guests where addr1 is null and lastname not in ('Lopez', 'Hay', 'Casarez', 'Vargas') and bmail = 0 and ctry = 'USA' and bexclude = 0 group by lastname having count(lastname) > 1  
+FOR select lastname from guests where addr1 is null and lastname not in ([Exclude specific last names]) and bmail = 0 and ctry = 'USA' and bexclude = 0 group by lastname having count(lastname) > 1  
  Open GuestCoupleCursor    
     
  FETCH NEXT FROM GuestCoupleCursor    

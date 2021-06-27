@@ -10,7 +10,7 @@ DECLARE @lastname varchar(250)
 DECLARE @total int  
   
 Declare TotalCursor CURSOR  
-FOR select [Last Name], total from total where [Last Name] not in ('Acy', 'Lee', 'Lopez', 'Vargas', 'Williams', 'Wife', 'Hay', 'Grand Total', 'Sims')  
+FOR select [Last Name], total from total where [Last Name] not in ([Exclude specific last names])  
     
  Open TotalCursor  
   

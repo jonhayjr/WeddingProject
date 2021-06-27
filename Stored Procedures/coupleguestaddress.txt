@@ -10,7 +10,7 @@ DECLARE @zipcode varchar(250)
     
 --Creates cursor for guest couples with address    
 Declare GuestCoupleCursor CURSOR    
-FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%[Excludes specific last names%' and bmail = 0 group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and    
+FOR select lastname, addr1, isnull(addr2, ' ') addr2, city, state, zipcode from guests where addr1 is not null and lastname not like '%[Excludes specific last names%]' and bmail = 0 group by lastname, addr1, addr2, city, state, zipcode having count(lastname) > 1 and    
 count (addr1) > 1    
       
  Open GuestCoupleCursor    

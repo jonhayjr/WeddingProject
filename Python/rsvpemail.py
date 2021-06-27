@@ -5,9 +5,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 
-email_user = 'jonhayjr@gmail.com'
-email_password = 'Haymaker17'
-email_send = 'jonhayjr@gmail.com'
+email_user = 
+email_password = 
+email_send = 
 
 subject = 'Modified Guest RSVPs and Notes'
 
@@ -16,7 +16,7 @@ msg['From'] = email_user
 msg['To'] = email_send
 msg['Subject'] = subject
 
-body = 'Hi Jon!  Here are the modified RSVPs and notes for today.'
+body = 'Hi!  Here are the modified RSVPs and notes for today.'
 msg.attach(MIMEText(body,'plain'))
 
 filename='C:\\Exports\\RSVPUpdates.csv'

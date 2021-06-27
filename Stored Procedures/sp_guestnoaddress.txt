@@ -6,7 +6,7 @@ DECLARE @lastname varchar(250)
   
 Declare GuestNoAddressCursor CURSOR  
 FOR select ltrim(rtrim(firstname)), case when lastname like '%GF%' or lastname like '%Santa Clarita%' or lastname like '%wife%' or lastname like '%shoreline ministry%' then ' ' else ltrim (rtrim(lastname)) end lastname from guests where addr1 is null and 
-lastname not in (select lastname from guests where addr1 is null and lastname not in ('Hay', 'Wife') group by lastname having count(lastname) > 1 )  
+lastname not in (select lastname from guests where addr1 is null and lastname not in ([Exclude specific last names]) group by lastname having count(lastname) > 1 )  
     
  Open GuestNoAddressCursor  
   
